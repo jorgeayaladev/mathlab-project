@@ -1,7 +1,8 @@
 import "katex/dist/katex.min.css"
-import React, { FormEvent, useEffect, useState } from "react"
+import React, { FormEvent, useState } from "react"
 import { InlineMath } from "react-katex"
-import { mcd } from "../types/General"
+import { mcd, modInverse } from "../types/General"
+import DropDownLayout from "../layouts/DropDownLayout"
 
 type Data = {
   a: number
@@ -18,55 +19,59 @@ const LinearCongruence = () => {
     e.preventDefault()
 
     const formData = new FormData(e.currentTarget)
-    const [a, b, n] = ["a", "b", "n"].map((field) => {
+    let [a, b, n] = ["a", "b", "n"].map((field) => {
       return Number(formData.get(field))
     })
 
     // Verificar si los datos tienen un factor común de simplificación
-    const factor = mcd(mcd(a, b), n)
-    if (factor > 1) {
-      setData({ a: a / factor, b: b / factor, n: n / factor })
-    } else {
-      setData({ a, b, n })
+    const simp = mcd(mcd(a, b), n)
+    if (simp > 1) {
+      a = a / simp
+      b = b / simp
+      n = n / simp
     }
-  }
 
-  useEffect(() => {
-    if (data) {
-      const elementos: React.JSX.Element[] = []
-      let factor = 1,
-        encontrado = false
-      while (!encontrado) {
-        const buscado = (data.a * factor - 1) / data.n
-        if ((data.a * factor - 1) % data.n === 0) {
-          elementos.push(
-            <InlineMath
-              math={`{(${data.a} \\times ${factor} - 1) \\div ${data.n} = ${buscado} \\in \\mathbb{Z}}`}
-            />
-          )
-          encontrado = true
-        } else {
-          elementos.push(
-            <InlineMath
-              math={`{(${data.a} \\times ${factor} - 1) \\div ${
-                data.n
-              } = ${buscado.toFixed(2)} \\notin \\mathbb{Z}}`}
-            />
-          )
-          factor++
-        }
-      }
-      setBucleElementos(elementos)
-      setFactor(factor)
+    if (modInverse(a, n) === null) {
+      alert("No existe inverso del módulo para esos valores.")
+      return
     }
-  }, [data])
+
+    const elementos: React.JSX.Element[] = []
+    let factor = 1,
+      encontrado = false
+    while (!encontrado) {
+      const buscado = (a * factor - 1) / n
+      if ((a * factor - 1) % n === 0) {
+        elementos.push(
+          <InlineMath
+            math={`{(${a} \\times ${factor} - 1) \\div ${n} = ${buscado} \\in \\mathbb{Z}}`}
+          />
+        )
+        encontrado = true
+      } else {
+        elementos.push(
+          <InlineMath
+            math={`{(${a} \\times ${factor} - 1) \\div ${n} = ${buscado.toFixed(
+              2
+            )} \\notin \\mathbb{Z}}`}
+          />
+        )
+        factor++
+      }
+    }
+
+    setBucleElementos(elementos)
+    setFactor(factor)
+    setData({ a, b, n })
+  }
 
   return (
     <div className="mt-6 bg-gray-50 p-6 rounded-lg border border-gray-200">
       <h3 className="text-2xl font-semibold text-red-500 mb-3">
         Calculadora de Congruencias
       </h3>
-      <div className="mb-3 text-center bg-blue-50 border-l-4 border-blue-700 py-2 px-4">
+      <div className="mb-3 text-left bg-blue-50 border-l-4 border-blue-700 py-2 px-4">
+        <p className="font-semibold underline">Consideración:</p>
         <InlineMath math={`{ax \\equiv b \\mod n}`} />
       </div>
       {/* Formulario de entrada */}
@@ -126,7 +131,7 @@ const LinearCongruence = () => {
       {/* Respuesta */}
       <div className="p-4 mb-4 bg-white rounded-lg border border-gray-200">
         <p className="mb-3 font-semibold">Resultado:</p>
-        <div className="mb-3 text-center bg-green-50 border-l-4 border-green-700 py-2 px-4">
+        <div className="text-left bg-green-50 border-l-4 border-green-700 py-2 px-4">
           {data ? (
             <div className="flex flex-col gap-1 text-left">
               {factor * data.b > data.n ? (
@@ -162,28 +167,33 @@ const LinearCongruence = () => {
       </div>
 
       {/* Procedimiento */}
-      <div className="p-4 bg-white rounded-lg border border-gray-200">
-        <p className="mb-3 font-semibold">Procedimiento:</p>
-        <div className="mb-3 text-center bg-green-50 border-l-4 border-green-700 py-2 px-4">
+      <DropDownLayout id="linear-congruence-procedure" title="Procedimiento:">
+        <div className="text-left bg-green-50 border-l-4 border-green-700 py-2 px-4">
           {data ? (
             <div className="flex flex-col gap-1">
-              <p className="my-1 font-semibold">Se nos solicita resolver:</p>
+              <p className="my-1 font-semibold">I) Se nos solicita resolver:</p>
               <InlineMath
                 math={`{${data.a}x \\equiv ${data.b} \\mod ${data.n}}`}
               />
               <p className="my-1 font-semibold">
-                Lo expresamos de la siguiente manera:
+                II) Lo expresamos de la siguiente manera:
               </p>
               <InlineMath
                 math={`{${data.a}x \\equiv \\mathring{${data.n}} + ${data.b}}`}
               />
-              <p className="my-1 font-semibold">Buscamos el factor común:</p>
+              <p className="my-1 font-semibold">
+                III) Buscamos el factor común:
+              </p>
               {bucleElementos?.map((elemento, index) => (
                 <div key={index}>{elemento}</div>
               ))}
-              <p className="my-1 font-semibold">
-                Utilizamos el factor encontrado ("{factor}"):
-              </p>
+              <div className="my-1 flex gap-1">
+                <p className="font-semibold">
+                  IV) Utilizamos el factor encontrado ("
+                </p>
+                <InlineMath math={`{${factor}}`} />
+                <p className="font-semibold">"):</p>
+              </div>
               <InlineMath
                 math={`{${factor}(${data.a}x) \\equiv ${factor}(\\mathring{${data.n}} + ${data.b})}`}
               />
@@ -221,7 +231,7 @@ const LinearCongruence = () => {
                       (factor * data.b) % data.n
                     }}`}
                   />
-                  <p className="my-1 font-semibold">Resultado final:</p>
+                  <p className="my-1 font-semibold">V) Resultado final:</p>
                   <InlineMath
                     math={`{x = ${data.n}k + ${
                       (factor * data.b) % data.n
@@ -245,7 +255,7 @@ const LinearCongruence = () => {
                       factor * data.b
                     }}`}
                   />
-                  <p className="my-1 font-semibold">Resultado final:</p>
+                  <p className="my-1 font-semibold">V) Resultado final:</p>
                   <InlineMath
                     math={`{x = ${data.n}k + ${
                       factor * data.b
@@ -258,7 +268,7 @@ const LinearCongruence = () => {
             <InlineMath math={`{ax \\equiv b \\mod n}`} />
           )}
         </div>
-      </div>
+      </DropDownLayout>
     </div>
   )
 }

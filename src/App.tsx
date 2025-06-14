@@ -2,9 +2,10 @@ import "katex/dist/katex.min.css"
 import { InlineMath } from "react-katex"
 import LinearCongruence from "./interfaces/LinearCongruence"
 import KeysGenerator from "./interfaces/KeysGenerator"
+import EncryptDecrypt from "./interfaces/EncryptDecrypt"
+import EditingFiles from "./interfaces/EditingFiles"
 
 function App() {
-
   return (
     <div className="bg-gray-50 font-sans">
       {/* Header */}
@@ -30,13 +31,13 @@ function App() {
 
       {/* Main content */}
       <main className="container mx-auto px-4 py-8">
-        {/* Introducción */}
+        {/* INTRODUCCIÓN */}
         <section className="mb-8 bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-bold text-blue-700 mb-4">
             Congruencias Lineales y Criptografía RSA
           </h2>
           <p className="text-gray-700 mb-4">
-            Este laboratorio virtual explora los conceptos de
+            Este laboratorio virtual explora los conceptos de{" "}
             <strong>congruencias lineales</strong> y su aplicación en el
             algoritmo de criptografía <strong>RSA</strong>. Aprenderás a
             resolver congruencias, generar claves RSA y cifrar/descifrar
@@ -57,8 +58,8 @@ function App() {
           </div>
         </section>
 
-        {/* CASO 1: Congruencias lineales */}
-        <section className="bg-white rounded-lg shadow-md p-6">
+        {/* MODULO 1: Congruencias lineales */}
+        <section className="mb-8 bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-bold text-blue-700 mb-4">
             Congruencias Lineales
           </h2>
@@ -92,6 +93,27 @@ function App() {
           {/* Calculadora de Congruencias */}
           <LinearCongruence />
         </section>
+
+        {/* MODULO 2: Criptografía RSA */}
+        <section className="mb-8 bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-bold text-blue-700 mb-4">
+            Criptografía RSA
+          </h2>
+          <p className="text-gray-700 mb-4">
+            RSA es un algoritmo de cifrado asimétrico que utiliza dos claves:
+            una pública (para cifrar) y una privada (para descifrar). Se basa en
+            la dificultad de factorizar números grandes.
+          </p>
+
+          {/* Generador de Claves RSA */}
+          <KeysGenerator />
+
+          {/* Cifrado y descifrado RSA */}
+          <EncryptDecrypt />
+        </section>
+
+        {/* MODULO 3: Cifrado y descifrado de archivos .txt */}
+        <EditingFiles />
       </main>
     </div>
   )
