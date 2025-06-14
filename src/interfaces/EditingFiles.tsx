@@ -1,8 +1,8 @@
-import { useState } from "react"
 import StepOneFiles from "../components/StepOneFiles"
 import StepTwoFiles from "../components/StepTwoFiles"
 
 const EditingFiles = () => {
+  /*
   const [fileContent, setFileContent] = useState<string>("")
   const [fileName, setFileName] = useState<string>("")
   const [isPreviewVisible, setIsPreviewVisible] = useState<boolean>(false)
@@ -33,6 +33,7 @@ const EditingFiles = () => {
     }
   }
 
+
   const handleDownload = () => {
     const blob = new Blob([fileContent], { type: "text/plain;charset=utf-8" })
     const url = URL.createObjectURL(blob)
@@ -43,7 +44,7 @@ const EditingFiles = () => {
     a.click()
 
     URL.revokeObjectURL(url) // liberar memoria
-  }
+  }*/
 
   return (
     <section className="mb-8 bg-white rounded-lg shadow-md p-6">
